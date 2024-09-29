@@ -1,7 +1,7 @@
 defmodule WaveFormat do
+  require WaveFormat
   defmacro int32LE, do: quote(do: integer - signed - 32 - little)
   defmacro int16LE, do: quote(do: integer - signed - 16 - little)
-  import ExFft
 
   def parse(bytes) do
     # WAVE HEADER
@@ -10,20 +10,13 @@ defmodule WaveFormat do
       |> read_fmt_subChunk
       |> read_data_subChunk
 
-    IO.inspect(fmt)
+    {amplitude, length} = decode_amplitude(bytes, [])
 
-    {amplitude, length} = Map.get(fmt, "SubChunk2Size") |> decode_amplitude(bytes)
-
-    # IO.inspect([fmt, amplitude, length])
-    ExFft.fft(amplitude, :ortho)
-    |> Enum.with_index()
-    |> IO.inspect()
-
-    # |> Enum.each(fn {x, idx} -> (idx * 4000 / 16384) |> IO.inspect() end)
+    {fmt, length, amplitude}
   end
 
   defp read_riff_chunk({fmt, bytes}) do
-    <<"RIFF", chunkSize::int32LE, "WAVE", rest::binary>> = bytes
+    <<"RIFF", chunkSize::int32LE(), "WAVE", rest::binary>> = bytes
 
     fmt =
       Map.put(fmt, "ChunkID", "RIFF")
@@ -34,8 +27,8 @@ defmodule WaveFormat do
   end
 
   defp read_fmt_subChunk({fmt, bytes}) do
-    <<"fmt ", subChunk1Size::int32LE, audioFormat::int16LE, numChannels::int16LE,
-      sampleRate::int32LE, byteRate::int32LE, blockAlign::int16LE, bitsPerSample::int16LE,
+    <<"fmt ", subChunk1Size::int32LE(), audioFormat::int16LE(), numChannels::int16LE(),
+      sampleRate::int32LE(), byteRate::int32LE(), blockAlign::int16LE(), bitsPerSample::int16LE(),
       rest::binary>> = bytes
 
     fmt =
@@ -52,7 +45,7 @@ defmodule WaveFormat do
   end
 
   defp read_data_subChunk({fmt, bytes}) do
-    <<"data", subChunk2Size::int32LE, data::binary>> = bytes
+    <<"data", subChunk2Size::int32LE(), data::binary>> = bytes
 
     fmt =
       Map.put(fmt, "SubChunk2ID", "data")
@@ -67,13 +60,11 @@ defmodule WaveFormat do
     if format == 1, do: "PCM", else: "OTHER"
   end
 
-  defp decode_amplitude(size, point, points \\ [])
-
-  defp decode_amplitude(_, "", points) do
+  defp decode_amplitude("", points) do
     Enum.reduce(points, {[], 0}, fn point, {rev, len} -> {[point | rev], len + 1} end)
   end
 
-  defp decode_amplitude(size, <<point::int32LE, rest::binary>>, points) do
-    decode_amplitude(size - 1, rest, [point | points])
+  defp decode_amplitude(<<point::int16LE(), rest::binary>>, points) do
+    decode_amplitude(rest, [point | points])
   end
 end

@@ -1,4 +1,23 @@
 defmodule TouchToneDialing.TouchToneTask do
+  defp download_wav(url) do
+    path_to_file =
+      File.cwd!()
+      |> Path.join("/lib/touch_tone_dialing/wav")
+
+    File.mkdir(path_to_file)
+
+    path_to_file =
+      path_to_file
+      |> Path.join("audio.wav")
+      |> String.to_charlist()
+
+    File.rm(path_to_file)
+
+    {:ok, :saved_to_file} = :httpc.request(:get, {url, []}, [], stream: path_to_file)
+
+    {:ok, path_to_file}
+  end
+
   defp download_problem(access_token) do
     url =
       ~s"https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=" <>
@@ -23,7 +42,8 @@ defmodule TouchToneDialing.TouchToneTask do
     {:ok, req_body} = Jason.encode(solution)
 
     url =
-      ~s"https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=" <> access_token
+      ~s"https://hackattic.com/challenges/touch_tone_dialing/solve?playground=1&access_token=" <>
+        access_token
 
     {:ok, {{_, 200, _}, _, body}} =
       :httpc.request(:post, {url, headers, content_type, req_body}, [], [])
@@ -32,36 +52,15 @@ defmodule TouchToneDialing.TouchToneTask do
   end
 
   def run(access_token) do
-    path =
-      File.cwd!()
-      |> Path.join("/lib/touch_tone_dialing/wav")
-      |> Path.join("audio.wav")
-      |> String.to_charlist()
-
     path = download_problem(access_token)
 
     {:ok, bytes} = File.read(path)
 
-    File.stat(path) |> IO.inspect()
-    fmt = WaveFormat.parse(bytes)
+    {fmt, length, amplitude} = WaveFormat.parse(bytes)
 
-    # FORMAT
-  end
+    seq = DTMF.decode(fmt, length, amplitude)
+    IO.inspect({"DECODED SEQUENCE : ", seq})
 
-  defp download_wav(url) do
-    path_to_file =
-      File.cwd!()
-      |> Path.join("/lib/touch_tone_dialing/wav")
-
-    File.mkdir(path_to_file)
-
-    path_to_file =
-      path_to_file
-      |> Path.join("audio.wav")
-      |> String.to_charlist()
-
-    {:ok, :saved_to_file} = :httpc.request(:get, {url, []}, [], stream: path_to_file)
-
-    {:ok, path_to_file}
+    submit_response(access_token, %{sequence: seq})
   end
 end
