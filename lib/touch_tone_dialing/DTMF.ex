@@ -2,7 +2,7 @@ defmodule DTMF do
   @target_freqs [697, 770, 852, 941, 1209, 1336, 1477]
 
   defp generate_samples(points, threshold) do
-    {samples, sample, zeros} =
+    {samples, sample, _zeros} =
       Enum.reduce(points, {[], [], 0}, fn point, {samples, sample, zeros} ->
         zeros = if point == 0, do: zeros + 1, else: 0
 

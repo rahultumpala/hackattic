@@ -2,6 +2,10 @@ defmodule WebSocketChitChat.WebSocketTask do
   alias WebSocketClient
   use GenServer
 
+  def init(init_arg) do
+    {:ok, init_arg}
+  end
+
   def start_link(access_token) do
     GenServer.start_link(__MODULE__, access_token)
   end

@@ -28,3 +28,4 @@ unpack-*.tar
 /.elixir_ls/
 
 wav/
+rdb

@@ -1,5 +1,4 @@
 defmodule WaveFormat do
-  require WaveFormat
   defmacro int32LE, do: quote(do: integer - signed - 32 - little)
   defmacro int16LE, do: quote(do: integer - signed - 16 - little)
 

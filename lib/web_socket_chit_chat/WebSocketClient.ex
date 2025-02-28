@@ -2,7 +2,7 @@ defmodule WebSocketClient do
   use WebSockex
 
   def start_link(url, state) do
-    {:ok, time} = DateTime.now("Etc/UTC")
+    {:ok, _time} = DateTime.now("Etc/UTC")
     WebSockex.start_link(url, __MODULE__, state)
   end
 
