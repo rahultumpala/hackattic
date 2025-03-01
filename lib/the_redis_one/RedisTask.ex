@@ -3,8 +3,7 @@ defmodule TheRedisOne.RedisTask do
   alias TheRedisOne.RDBFormat
 
   def run(access_token) do
-    url =
-      ~s"https://hackattic.com/challenges/the_redis_one/problem?access_token=" <> access_token
+    url = ~s"https://hackattic.com/challenges/the_redis_one/problem?access_token=" <> access_token
 
     {:ok, response} = :httpc.request(url)
     {{_, 200, _}, _, body} = response
@@ -33,8 +32,9 @@ defmodule TheRedisOne.RedisTask do
       Map.get(json, "rdb")
       |> String.codepoints()
       |> Base64.decode(<<>>, 0)
-
-    File.write("./rdb", rdb)
+    num = :rand.uniform(100) |> Integer.to_string()
+    IO.inspect("FILE => rdb#{num}")
+    File.write("./rdb/rdb" <> num, rdb)
     IO.inspect(type_check_key)
 
     RDBFormat.parse(rdb)
