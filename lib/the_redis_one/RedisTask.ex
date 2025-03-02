@@ -32,6 +32,7 @@ defmodule TheRedisOne.RedisTask do
       Map.get(json, "rdb")
       |> String.codepoints()
       |> Base64.decode(<<>>, 0)
+
     num = :rand.uniform(100) |> Integer.to_string()
     IO.inspect("FILE => rdb#{num}")
     File.write("./rdb/rdb" <> num, rdb)
