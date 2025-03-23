@@ -28,16 +28,50 @@ defmodule TheRedisOne.RedisTask do
   defp solve(json) do
     type_check_key = Map.get(json, "requirements") |> Map.get("check_type_of")
 
-    rdb =
-      Map.get(json, "rdb")
-      |> String.codepoints()
-      |> Base64.decode(<<>>, 0)
+    # rdb =
+    #   Map.get(json, "rdb")
+    #   |> String.codepoints()
+    #   |> Base64.decode(<<>>, 0)
 
-    num = :rand.uniform(100) |> Integer.to_string()
-    IO.inspect("FILE => rdb#{num}")
-    File.write("./rdb/rdb" <> num, rdb)
-    IO.inspect(type_check_key)
+    # num = :rand.uniform(100) |> Integer.to_string()
+    # IO.inspect("FILE => rdb#{num}")
+    # File.write("./rdb/rdb" <> num, rdb)
+    # IO.inspect(type_check_key)
 
-    RDBFormat.parse(rdb)
+    {:ok, rdb} = File.read("./rdb/rdb93")
+
+    fmt = RDBFormat.parse(rdb)
+
+    get_emoji_value(fmt)
+
+    # response_map = Map.new()
+    #             |> Map.put("db_count", Map.get(fmt, "db_count"))
+    #             |> Map.put("emoji_key_value", )
+  end
+
+  defp get_emoji_value(fmt) do
+    Map.get(fmt, "db")
+    |> IO.inspect()
+    |> Enum.map(fn {db_num, db} -> db end)
+    |> IO.inspect()
+    |> Enum.each(fn map ->
+      emoji_keys =
+        Map.keys(map)
+        |> Enum.filter(fn key -> key != "db_ht_sz" && key != "exp_ht_sz" end)
+        |> Enum.filter(fn key -> Map.get(map, key) |> Map.get("emoji", true) end)
+        |> Enum.into([])
+
+      cond do
+        Enum.count(emoji_keys) == 1 ->
+          key = Enum.at(emoji_keys, 0)
+          value = Map.get(map, key) |> Map.get("value")
+      end
+
+      emoji_keys
+    end)
+    |> Enum.filter(fn {key, value} -> key != "db_ht_sz" && key != "exp_ht_sz" end)
+    |> IO.inspect()
+    |> Enum.filter(fn {key, value_map} -> Map.get(value_map, "emoji") end)
+    |> IO.inspect()
   end
 end

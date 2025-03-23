@@ -14,7 +14,7 @@ defmodule TheRedisOne.RDBFormat do
 
     {fmt, _bits} = read({fmt, rest})
 
-    IO.inspect(fmt)
+    fmt
   end
 
   defp read({fmt, bits}) do
@@ -148,7 +148,8 @@ defmodule TheRedisOne.RDBFormat do
           cur_db_map
           |> Map.put(key, %{
             "type" => type,
-            "value" => value
+            "value" => value,
+            "emoji" => is_key_emoji?(key)
           })
 
         read_kv_pairs(cur_db_map, rest, total - 1)
@@ -165,5 +166,10 @@ defmodule TheRedisOne.RDBFormat do
       |> read_kv_pairs(bits, db_ht_sz)
 
     {cur_db_map, bits}
+  end
+
+  defp is_key_emoji?(key) do
+    (byte_size(key) == 4 && String.length(key) == 1) ||
+      (byte_size(key) == 2 && String.length(key) == 1)
   end
 end

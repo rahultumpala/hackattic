@@ -81,16 +81,17 @@ defmodule TheRedisOne.RedisDecoder do
   end
 
   defp read_hashmap_ziplist_encoding(bits) do
-    <<lenBytes::integer-unsigned-little-32, rest::bitstring>> = bits
-    <<valueBits::bitstring-size(lenBytes * 8 - 32), rest::bitstring>> = rest
-    {valueBits, rest}
+    {ziplist_string_encoded, rest} = read_len_encoded_bits(bits)
+    # <<lenBytes::integer-unsigned-little-32, rest::bitstring>> = ziplist_string_encoded
+    # <<valueBits::bitstring-size(lenBytes * 8 - 32), rest::bitstring>> = rest
+    {ziplist_string_encoded, rest}
   end
 
   defp read_intset_encoding(bits) do
-    <<_encoding::integer-unsigned-big-32, length::integer-big-unsigned-32, rest::bitstring>> =
-      bits
-
-    <<contents::bitstring-size(length * 8), rest::bitstring>> = rest
-    {contents, rest}
+    {intset_string_encoded, rest} = read_len_encoded_bits(bits)
+    # <<_encoding::integer-unsigned-big-32, length::integer-big-unsigned-32, rest::bitstring>> =
+    #   bits
+    # <<contents::bitstring-size(length * 8), rest::bitstring>> = rest
+    {intset_string_encoded, rest}
   end
 end
