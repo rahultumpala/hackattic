@@ -13,65 +13,97 @@ defmodule TheRedisOne.RedisTask do
         {:ok, json} -> solve(json)
       end
 
-    # headers = []
-    # content_type = ~c"application/json"
-    # {:ok, req_body} = Jason.encode(solution)
+    headers = []
+    content_type = ~c"application/json"
+    {:ok, req_body} = Jason.encode(solution)
 
-    # url = ~s"https://hackattic.com/challenges/the_redis_one/solve?access_token=" <> access_token
+    url = ~s"https://hackattic.com/challenges/the_redis_one/solve?access_token=" <> access_token
 
-    # {:ok, {{_, 200, _}, _, body}} =
-    #   :httpc.request(:post, {url, headers, content_type, req_body}, [], [])
+    {:ok, {{_, 200, _}, _, body}} =
+      :httpc.request(:post, {url, headers, content_type, req_body}, [], [])
 
-    # IO.inspect(body)
+    IO.inspect(body)
   end
 
   defp solve(json) do
     type_check_key = Map.get(json, "requirements") |> Map.get("check_type_of")
 
-    # rdb =
-    #   Map.get(json, "rdb")
-    #   |> String.codepoints()
-    #   |> Base64.decode(<<>>, 0)
+    rdb =
+      Map.get(json, "rdb")
+      |> String.codepoints()
+      |> Base64.decode(<<>>, 0)
 
-    # num = :rand.uniform(100) |> Integer.to_string()
-    # IO.inspect("FILE => rdb#{num}")
-    # File.write("./rdb/rdb" <> num, rdb)
-    # IO.inspect(type_check_key)
+    num = :rand.uniform(100) |> Integer.to_string()
+    IO.inspect("FILE => rdb#{num}")
+    File.write("./rdb/rdb" <> num, rdb)
+    IO.inspect(type_check_key)
 
-    {:ok, rdb} = File.read("./rdb/rdb93")
+    fmt = RDBFormat.parse(rdb) |> IO.inspect()
 
-    fmt = RDBFormat.parse(rdb)
+    emoji_value =
+      get_value_for_key(
+        fmt,
+        fn map, key -> Map.get(map, key) |> Map.get("emoji") end
+      )
+      |> Map.get("value")
 
-    get_emoji_value(fmt)
+    type_check_key_value =
+      get_value_for_key(
+        fmt,
+        fn _map, key -> key == type_check_key end
+      )
+      |> Map.get("type")
 
-    # response_map = Map.new()
-    #             |> Map.put("db_count", Map.get(fmt, "db_count"))
-    #             |> Map.put("emoji_key_value", )
-  end
+    expiry_map =
+      get_value_for_key(
+        fmt,
+        fn _map, key -> key == "expiry_map" end
+      )
 
-  defp get_emoji_value(fmt) do
-    Map.get(fmt, "db")
-    |> IO.inspect()
-    |> Enum.map(fn {db_num, db} -> db end)
-    |> IO.inspect()
-    |> Enum.each(fn map ->
-      emoji_keys =
-        Map.keys(map)
-        |> Enum.filter(fn key -> key != "db_ht_sz" && key != "exp_ht_sz" end)
-        |> Enum.filter(fn key -> Map.get(map, key) |> Map.get("emoji", true) end)
-        |> Enum.into([])
-
-      cond do
-        Enum.count(emoji_keys) == 1 ->
-          key = Enum.at(emoji_keys, 0)
-          value = Map.get(map, key) |> Map.get("value")
+    expiry_millis =
+      if expiry_map != nil do
+        expiry_map
+        |> Enum.map(fn {_key, value} -> value end)
+        |> Enum.at(0)
+      else
+        nil
       end
 
-      emoji_keys
-    end)
-    |> Enum.filter(fn {key, value} -> key != "db_ht_sz" && key != "exp_ht_sz" end)
-    |> IO.inspect()
-    |> Enum.filter(fn {key, value_map} -> Map.get(value_map, "emoji") end)
-    |> IO.inspect()
+    response_map =
+      Map.new()
+      |> Map.put("db_count", Map.get(fmt, "db_count"))
+      |> Map.put("emoji_key_value", emoji_value)
+      |> Map.put("expiry_millis", expiry_millis)
+      |> Map.put(type_check_key, type_check_key_value)
+
+    response_map
+  end
+
+  defp get_value_for_key(fmt, filter_lambda) do
+    ret_values =
+      Map.get(fmt, "db")
+      |> Enum.map(fn {_db_num, db} -> db end)
+      |> Enum.map(fn map ->
+        keys =
+          Map.keys(map)
+          |> Enum.filter(fn key -> key != "db_ht_sz" && key != "exp_ht_sz" end)
+          |> Enum.filter(fn key -> filter_lambda.(map, key) end)
+          |> Enum.into([])
+
+        cond do
+          Enum.count(keys) == 1 ->
+            key = Enum.at(keys, 0)
+            Map.get(map, key)
+
+          true ->
+            nil
+        end
+      end)
+      |> Enum.filter(fn val -> val != nil end)
+
+    case ret_values do
+      [] -> nil
+      _ -> Enum.at(ret_values, 0)
+    end
   end
 end

@@ -116,7 +116,7 @@ defmodule TheRedisOne.RDBFormat do
 
     cond do
       ts_bits_len > 0 ->
-        <<expiry_ts::integer-big-size(ts_bits_len), value_flag::integer-big-8, rest::bitstring>> =
+        <<expiry_ts::signed-little-size(ts_bits_len), value_flag::integer-big-8, rest::bitstring>> =
           rest
 
         {key, rest} = RedisDecoder.read_len_encoded_bits(rest)

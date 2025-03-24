@@ -11,11 +11,11 @@ defmodule TheRedisOne.RedisDecoder do
 
       13 ->
         {value, rest} = read_hashmap_ziplist_encoding(bits)
-        {"hashmap", value, rest}
+        {"hash", value, rest}
 
       11 ->
         {value, rest} = read_intset_encoding(bits)
-        {"intset", value, rest}
+        {"set", value, rest}
 
       _ ->
         raise("Value decoding not implemented for value type " <> Integer.to_string(value_flag))

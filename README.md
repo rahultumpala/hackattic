@@ -8,3 +8,5 @@ Solved:
 - Touch Tone Dialing - 35pts - [Challenge](https://hackattic.com/challenges/touch_tone_dialing) - [Code](/lib/touch_tone_dialing/)
 
 - WebSocket Chit Chat - 30pts - [Challenge](https://hackattic.com/challenges/websocket_chit_chat) - [Code](/lib/web_socket_chit_chat/)
+
+- The one with Redis - 70pts - [Challenge](https://hackattic.com/challenges/the_redis_one) - [Code](/lib/the_redis_one/)
