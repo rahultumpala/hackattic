@@ -3,7 +3,7 @@ output "ecr_repository" {
 }
 
 output "ec2_ips" {
-  description = "Public DNS of all ALBs per region"
+  description = "Public IPs of all EC2 instances"
   value = {
     "ap-south-2"     = module.ap_south_2.ecs_instance_public_ip
     "ap-southeast-1" = module.ap_southeast_1.ecs_instance_public_ip
