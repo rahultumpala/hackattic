@@ -38,7 +38,7 @@ defmodule AGlobalPresence.Server do
 
     countries = presence_body |> to_string() |> String.split(",") |> length()
 
-    if countries >= 1 do
+    if countries >= 7 do
       headers = []
       content_type = ~c"application/json"
 
