@@ -12,9 +12,9 @@ defmodule Hackattic do
     # IO.inspect({"WebSocket Server PID", pid})
     # GenServer.cast(pid, :run)
 
-    TheRedisOne.RedisTask.run(access_token)
+    # TheRedisOne.RedisTask.run(access_token)
 
-    children = []
+    children = [{Bandit, plug: AGlobalPresence.Server, scheme: :http, port: 80}]
     opts = [strategy: :one_for_one]
     Supervisor.start_link(children, opts)
   end
