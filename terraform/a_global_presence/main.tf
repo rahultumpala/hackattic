@@ -168,7 +168,7 @@ resource "aws_iam_instance_profile" "instance_profile" {
 # Module calls per region
 module "ap_south_2" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "ap-south-2"
   app_name                  = var.app_name
   image                     = var.image
@@ -182,7 +182,7 @@ module "ap_south_2" {
 
 module "ap_southeast_1" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "ap-southeast-1"
   app_name                  = var.app_name
   image                     = var.image
@@ -196,7 +196,7 @@ module "ap_southeast_1" {
 
 module "ap_southeast_2" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "ap-southeast-2"
   app_name                  = var.app_name
   image                     = var.image
@@ -210,7 +210,7 @@ module "ap_southeast_2" {
 
 module "ap_northeast_1" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "ap-northeast-1"
   app_name                  = var.app_name
   image                     = var.image
@@ -224,7 +224,7 @@ module "ap_northeast_1" {
 
 module "ap_northeast_2" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "ap-northeast-2"
   app_name                  = var.app_name
   image                     = var.image
@@ -238,7 +238,7 @@ module "ap_northeast_2" {
 
 module "us_east_1" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "us-east-1"
   app_name                  = var.app_name
   image                     = var.image
@@ -252,7 +252,7 @@ module "us_east_1" {
 
 module "eu_west_1" {
 
-  source                    = "./modules/ecs-ec2-eip"
+  source                    = "../modules/ecs-ec2-eip"
   region                    = "eu-west-1"
   app_name                  = var.app_name
   image                     = var.image

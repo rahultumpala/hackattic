@@ -10,5 +10,6 @@ RUN mix deps.get --only prod
 RUN MIX_ENV=PROD mix release
 
 EXPOSE 80
+EXPOSE 9002
 
 ENTRYPOINT ["sh", "-c", "./_build/PROD/rel/hackattic/bin/hackattic start"]

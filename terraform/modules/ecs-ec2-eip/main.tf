@@ -37,6 +37,14 @@ resource "aws_security_group" "ecs_http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "UDP from the internet"
+    from_port   = 9002
+    to_port     = 9002
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -99,6 +107,11 @@ resource "aws_ecs_task_definition" "app_task" {
         {
           containerPort = 80
           hostPort      = 80
+        },
+        {
+          containerPort = 9002
+          hostPort      = 9002
+          protocol = "udp"
         }
       ]
       healthCheck = {

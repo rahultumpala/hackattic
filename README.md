@@ -11,4 +11,6 @@ Solved:
 
 - The one with Redis - 70pts - [Challenge](https://hackattic.com/challenges/the_redis_one) - [Code](/lib/the_redis_one/)
 
-- A Global Presence - 35pts - [Challenge](https://hackattic.com/challenges/a_global_presence) - [Code](/lib/a_global_presence/) - [Terraform Infra](/terraform/a_global_presence/) - [Shell Script to Invoke the server](/global_presence.sh)
+- A Global Presence - 35pts - [Challenge](https://hackattic.com/challenges/a_global_presence) - [Code](/lib/a_global_presence/) - [Terraform Infra](/terraform/a_global_presence/) - [Shell Script to invoke the server](/global_presence.sh)
+
+- Serving DNS - 60pts - [Challenge](https://hackattic.com/challenges/serving_dns) - [Code](/lib/serving_dns/) - [Terraform Infra](/terraform/serving_dns/) - [Shell script to invoke the server](/serving_dns.sh)
