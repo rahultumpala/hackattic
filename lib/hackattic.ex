@@ -14,7 +14,8 @@ defmodule Hackattic do
 
     # TheRedisOne.RedisTask.run(access_token)
 
-    children = [{Bandit, plug: AGlobalPresence.Server, scheme: :http, port: 80}]
+    # children = [{Bandit, plug: AGlobalPresence.Server, scheme: :http, port: 80}]
+    children = [{Bandit, plug: ServingDns.HackatticWrapper, scheme: :http, port: 80}]
     opts = [strategy: :one_for_one]
     Supervisor.start_link(children, opts)
   end
